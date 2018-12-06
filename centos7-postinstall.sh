@@ -1,6 +1,7 @@
 #!/bin/bash
+CURRENTDIR="$(dirname "$(readlink -f "$0")")"
 
-source config.sh
+source "$CURRENTDIR"/config.sh
 # Todo controle si le fichier existe
 
 readonly HOSTNAMEFULL="$COMPUTERNAME"."$HOSTNAME"
@@ -15,12 +16,13 @@ function error_exit
 # http://unix.stackexchange.com/questions/70859/why-doesnt-sudo-su-in-a-shell-script-run-the-rest-of-the-script-as-root 
 if [ "$(whoami)" = root ]; then
 
-    # for OVH only:
-    cp /root/.ssh/authorized_keys2 /root/.ssh/authorized_keys
-    # or using AUTHORIZEDKEYS
-    #echo "$AUTHORIZEDKEYS" > /root/.ssh/authorized_keys
-
-    chmod 600 /root/.ssh/authorized_key
+    mkdir -p /root/.ssh
+    if [ ! -e /root/.ssh/authorized_keys ]; then
+       echo "$AUTHORIZEDKEYS" > /root/.ssh/authorized_keys
+    else
+       echo "$AUTHORIZEDKEYS" >> /root/.ssh/authorized_keys
+    fi
+    chmod 600 /root/.ssh/authorized_keys
     sed -i 's/RSAAuthentication no/RSAAuthentication yes/g' /etc/ssh/sshd_config
     sed -i 's/PubkeyAuthentication no/PubkeyAuthentication yes/g' /etc/ssh/sshd_config
     sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config
@@ -65,7 +67,7 @@ if [ "$(whoami)" = root ]; then
     yum -y install vim-enhanced tmux links mlocate
     
     # Docker
-    yum -y docker docker-registry
+    yum -y install docker docker-registry
     # make the Docker registry listen only on localhost
     #sed -i 's/REGISTRY_ADDRESS=0\.0\.0\.0/REGISTRY_ADDRESS=127.0.0.1/g' /etc/sysconfig/docker-registry
 
@@ -86,7 +88,7 @@ if [ "$(whoami)" = root ]; then
     # Creating and configuring $USERNAME user
     useradd -m "$USERNAME"
     gpasswd -a "$USERNAME" wheel
-    mkdir /home/"$USERNAME"/.ssh
+    mkdir -p /home/"$USERNAME"/.ssh
     cp /root/.ssh/authorized_keys /home/"$USERNAME"/.ssh/authorized_keys
     chown -R "$USERNAME":"$USERNAME" /home/"$USERNAME"/.ssh
     chmod 500 /home/"$USERNAME"/.ssh
@@ -97,11 +99,12 @@ if [ "$(whoami)" = root ]; then
     # TODO
     # something like echo username(add constant here) ALL=(ALL) /usr/bin/docker >> /etc/sudoers
  
-    cp "$0" /home/"$USERNAME"/centos7-postinstall.sh
-    chown "$USERNAME":"$USERNAME" /home/"$USERNAME"/centos7-postinstall.sh
-    chmod u+x /home/"$USERNAME"/centos7-postinstall.sh
-    su - -c /home/"$USERNAME"/centos7-postinstall.sh "$USERNAME"
-    rm -rf /home/"$USERNAME"/centos7-postinstall.sh
+    cp -r /root/linux-post-install /home/"$USERNAME"/
+    cd /home/"$USERNAME"/linux-post-install/
+    chown "$USERNAME":"$USERNAME" centos7-postinstall.sh
+    chmod u+x centos7-postinstall.sh
+    su - -c /home/"$USERNAME"/linux-post-install/centos7-postinstall.sh "$USERNAME"
+    rm -rf /home/"$USERNAME"/linux-post-install/
     
     # Haskdev can shut the machine down
     # http://www.garron.me/en/linux/visudo-command-sudoers-file-sudo-default-editor.html
