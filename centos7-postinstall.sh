@@ -61,13 +61,32 @@ if [ "$(whoami)" = root ]; then
     systemctl enable sendmail.service
 
     # Install base packages
-    yum -y install epel-release make gcc git git-daemon nmap p7zip
+    # ---------------------------------------------------------------------------
+    # epel-release : Extra Packages for Enterprise Linux repository configuration.
+    # make         : A GNU tool for controlling the generation of executables.
+    # gcc          : Various compilers (C, C++, Objective-C, Java, ...).
+    # git          : Git is a fast, scalable, distributed revision control system.
+    # git-daemon   : The git dæmon for supporting git:// access to git repositories.
+    # p7zip        : p7zip is a port of 7za.exe for Unix.
+    yum -y install epel-release make gcc git git-daemon p7zip
+    # nmap         : I don't remember why I installed this package -> Desactivated.
 
     # Install personnal preferences packages
+    # ---------------------------------------------------------------------------
+    # vim-enhanced : includes recently added enhancements like interpreters for the Python and Perl.
+    # tmux         : tmux is a "terminal multiplexer."
+    # links        : Links is a web browser capable of running in either graphics or text mode.
+    # mlocate      : A locate/updatedb implementation. Keeps a database of all files and allows you to lookup files by name.
     yum -y install vim-enhanced tmux links mlocate
     
+    # Rmate
+    # todo
+
+    # Netdata
+    # todo
+
     # Docker
-    yum -y install docker docker-registry
+    #yum -y install docker docker-registry
     # make the Docker registry listen only on localhost
     #sed -i 's/REGISTRY_ADDRESS=0\.0\.0\.0/REGISTRY_ADDRESS=127.0.0.1/g' /etc/sysconfig/docker-registry
 
@@ -76,8 +95,6 @@ if [ "$(whoami)" = root ]; then
 
     # MariaDB
     # todo
-
-    # Webmin? test first
 
     ## Installing Go
     #cd /usr/local
