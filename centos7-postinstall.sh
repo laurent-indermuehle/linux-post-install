@@ -186,7 +186,9 @@ elif [ "$(whoami)" = "$USERNAME" ]; then
     #                                 Oh-My-ZSH
     # -------------------------------------------------------------------------
     # Prerequisite : zsh
-    sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O --silent -)"
+
+    # Silent installation: https://github.com/robbyrussell/oh-my-zsh/issues/5873
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sed 's:env zsh -l::g' | sed 's:chsh -s .*$::g')"
  
 else
  
