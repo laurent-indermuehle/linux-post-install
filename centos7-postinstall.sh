@@ -60,49 +60,22 @@ if [ "$(whoami)" = root ]; then
     systemctl start sendmail.service
     systemctl enable sendmail.service
 
-    # Install base packages
-    # ---------------------------------------------------------------------------
-    # epel-release : Extra Packages for Enterprise Linux repository configuration.
+    # -------------------------------------------------------------------------
+    #                           Install base packages
+    # -------------------------------------------------------------------------
+    # epel-release : Extra Packages for Enterprise Linux repository config.
     # make         : A GNU tool for controlling the generation of executables.
     # gcc          : Various compilers (C, C++, Objective-C, Java, ...).
-    # git          : Git is a fast, scalable, distributed revision control system.
-    # git-daemon   : The git dæmon for supporting git:// access to git repositories.
+    # git          : A fast, scalable, distributed revision control system.
+    # git-daemon   : For supporting git:// access to git repositories.
     # p7zip        : p7zip is a port of 7za.exe for Unix.
-    yum -y install epel-release make gcc git git-daemon p7zip
-    # nmap         : I don't remember why I installed this package -> Desactivated.
+    # wget         : The non-interactive network downloader.
+    yum -y install epel-release make gcc git git-daemon p7zip wget
+    # nmap         : I don't remember why I installed this package -> OFF.
 
-    # Install personnal preferences packages
-    # ---------------------------------------------------------------------------
-    # vim-enhanced : includes recently added enhancements like interpreters for the Python and Perl.
-    # tmux         : tmux is a "terminal multiplexer."
-    # links        : Links is a web browser capable of running in either graphics or text mode.
-    # mlocate      : A locate/updatedb implementation. Keeps a database of all files and allows you to lookup files by name.
-    yum -y install vim-enhanced tmux links mlocate
-    
-    # Rmate
-    # todo
-
-    # Netdata
-    # todo
-
-    # Docker
-    #yum -y install docker docker-registry
-    # make the Docker registry listen only on localhost
-    #sed -i 's/REGISTRY_ADDRESS=0\.0\.0\.0/REGISTRY_ADDRESS=127.0.0.1/g' /etc/sysconfig/docker-registry
-
-    # Httpd (Apache)
-    # todo
-
-    # MariaDB
-    # todo
-
-    ## Installing Go
-    #cd /usr/local
-    #wget https://storage.googleapis.com/golang/go1.4.linux-amd64.tar.gz
-    #tar -zxvf go1.4.linux-amd64.tar.gz
-    #cd /root
-    
-    # Creating and configuring $USERNAME user
+    # -------------------------------------------------------------------------
+    #                 Creating and configuring your admin user
+    # -------------------------------------------------------------------------
     useradd -m "$USERNAME"
     gpasswd -a "$USERNAME" wheel
     mkdir -p /home/"$USERNAME"/.ssh
@@ -111,11 +84,52 @@ if [ "$(whoami)" = root ]; then
     chmod 500 /home/"$USERNAME"/.ssh
     chmod 400 /home/"$USERNAME"/.ssh/authorized_keys
 
+
+    # -------------------------------------------------------------------------
+    #                  Install personnal preferences packages
+    # -------------------------------------------------------------------------
+    # vim-enhanced : includes enhancements like interpreters for Python, Perl..
+    # tmux         : tmux is a "terminal multiplexer."
+    # links        : A web browser capable of running in graphics or text mode.
+    # mlocate      : A locate/updatedb implementation. Keeps a database of all 
+    #                files and allows you to lookup files by name.
+    # zsh          : Resembles ksh but with many enhancements
+    yum -y install vim-enhanced tmux links mlocate zsh
+
+    # Tmux doesn't work unless you're in tty group
+    gpasswd -a "$USERNAME" tty
+    # Change shell
+    chsh "$USERNAME" -s /bin/zsh
+    
+    # -------------------------------------------------------------------------
+    #                                   Rmate
+    # -------------------------------------------------------------------------
+    # This app let you edit files on a remote computer. I use it with this
+    # SublimeText 3 package: https://packagecontrol.io/packages/RemoteSubl
+    wget -O /usr/local/bin/rmate https://raw.githubusercontent.com/aurora/rmate/master/rmate
+    chmod a+x /usr/local/bin/rmate
+    # root doesn't have /usr/local in his path. And you'll often edit files
+    # as root, so :
+    ln -s /usr/local/bin/rmate /usr/bin
+
+    # -------------------------------------------------------------------------
+    #                                  Docker
+    # -------------------------------------------------------------------------
+    # Using this guide: https://docs.docker.com/install/linux/docker-ce/centos
+    yum install -y yum-utils device-mapper-persistent-data lvm2
+    yum-config-manager --add-repo \
+    https://download.docker.com/linux/centos/docker-ce.repo
+    yum install -y docker-ce
+    systemctl enable docker
+
     # Add Docker right for USERNAME
     # https://www.projectatomic.io/blog/2015/08/why-we-dont-let-non-root-users-run-docker-in-centos-fedora-or-rhel/
-    # TODO
-    # something like echo username(add constant here) ALL=(ALL) /usr/bin/docker >> /etc/sudoers
+    # But this script is for personal server, so we trust ourself...
+    gpasswd -a "$USERNAME" docker
  
+    # -------------------------------------------------------------------------
+    #             Prepare script to continue loged as your new user
+    # -------------------------------------------------------------------------
     cp -r /root/linux-post-install /home/"$USERNAME"/
     cd /home/"$USERNAME"/linux-post-install/
     chown "$USERNAME":"$USERNAME" centos7-postinstall.sh
@@ -123,22 +137,20 @@ if [ "$(whoami)" = root ]; then
     su - -c /home/"$USERNAME"/linux-post-install/centos7-postinstall.sh "$USERNAME"
     rm -rf /home/"$USERNAME"/linux-post-install/
     
-    # Haskdev can shut the machine down
-    # http://www.garron.me/en/linux/visudo-command-sudoers-file-sudo-default-editor.html
-    #echo "$USERNAME ALL= NOPASSWD: /sbin/shutdown -h now, /usr/bin/lastb" >> /etc/sudoers
- 
-    # Starting Docker
-    # service docker start
-    # service docker-registry start
  
 elif [ "$(whoami)" = "$USERNAME" ]; then
  
-    # Configuring git
+    # -------------------------------------------------------------------------
+    #                              Configuring GIT
+    # -------------------------------------------------------------------------
     git config --global user.name "$USERNAME"
     git config --global user.email "$USEREMAIL"
     git config --global push.default simple
  
-    # Configuring vim
+    # -------------------------------------------------------------------------
+    #                              Configuring vim
+    # -------------------------------------------------------------------------
+    # Not tested yet
     #curl -L -O https://raw.githubusercontent.com/danidiaz/miscellany/master/linux/.vimrc
      
     #mkdir -p ~/.vim/autoload ~/.vim/bundle && \
@@ -161,25 +173,20 @@ elif [ "$(whoami)" = "$USERNAME" ]; then
     #curl -L -O https://raw.githubusercontent.com/fugalh/desert.vim/master/desert.vim
     #cd "$HOME"
  
-    # Configuring tmux
+    # -------------------------------------------------------------------------
+    #                             Configuring tmux
+    # -------------------------------------------------------------------------
     # Note that prefix is set to C-j
     curl -L -O "$TMUXCONFURL"
     mv tmux.conf .tmux.conf
-     
-    # Necessary for tmux to work
-    # echo export LD_LIBRARY_PATH=/usr/local/lib >> "$HOME"/.bash_profile
- 
-    # Settign go path
-    #echo "PATH=\$PATH:/usr/local/go/bin" >> .bash_profile
-    #
-    #mkdir go
-    #mkdir go/src
-    #mkdir go/pkg
-    #mkdir go/bin
-    #
-    #echo "GOPATH=\$PATH:\$HOME/go" >> .bash_profile
-    #echo "export GOPATH" >> .bash_profile
-    #echo "PATH=\$PATH:\$HOME/go/bin" >> .bash_profile
+    # Neither in Putty or WinSSHTerm on Kitty, the binding works. I'm not sure
+    # I want to continue using screen or tmux from Windows...
+
+    # -------------------------------------------------------------------------
+    #                                 Oh-My-ZSH
+    # -------------------------------------------------------------------------
+    # Prerequisite : zsh
+    sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O --silent -)"
  
 else
  
