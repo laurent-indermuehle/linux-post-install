@@ -46,6 +46,9 @@ if [ "$(whoami)" = root ]; then
     hostnamectl set-hostname "$COMPUTERNAME" --pretty
     hostnamectl set-hostname "$HOSTNAME" --static
 
+    # Timezone
+    timedatectl set-timezone "$TIMEZONE"
+
     # Yum-cron
     yum -y install yum-cron sendmail
     # https://askubuntu.com/questions/76808/how-do-i-use-variables-in-a-sed-command
