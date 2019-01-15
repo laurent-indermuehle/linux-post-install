@@ -80,7 +80,11 @@ if [ "$(whoami)" = root ]; then
     #                 Creating and configuring your admin user
     # -------------------------------------------------------------------------
     useradd -m "$USERNAME"
+
+    # Add sudo (admin) rights
     gpasswd -a "$USERNAME" wheel
+
+    # SSH
     mkdir -p /home/"$USERNAME"/.ssh
     cp /root/.ssh/authorized_keys /home/"$USERNAME"/.ssh/authorized_keys
     chown -R "$USERNAME":"$USERNAME" /home/"$USERNAME"/.ssh
