@@ -196,6 +196,18 @@ elif [ "$(whoami)" = "$USERNAME" ]; then
 
     # Silent installation: https://github.com/robbyrussell/oh-my-zsh/issues/5873
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sed 's:env zsh -l::g' | sed 's:chsh -s .*$::g')"
+    # You may want to add your own ~/.zshrc for enabling plugins, ...
+    # This script doesn't take car of that.
+
+    # -------------------------------------------------------------------------
+    #                                 Cheat.sh
+    # -------------------------------------------------------------------------
+    # TODO : Attention, we use ZSH !
+    # mkdir -p ~/.bash.d/
+    # curl https://cht.sh/:bash_completion > ~/.bash.d/cht.sh
+    # echo 'source ~/.bash.d/cht.sh' >> ~/.bashrc
+    # source ~/.bash.d/cht.sh
+
  
 else
  
