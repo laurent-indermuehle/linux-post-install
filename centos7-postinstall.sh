@@ -29,6 +29,11 @@ if [ "$(whoami)" = root ]; then
     sed -i 's/GSSAPIAuthentication yes/GSSAPIAuthentication no/g' /etc/ssh/sshd_config
     # sed -i 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config
     systemctl restart sshd
+
+    # Add /usr/local/bin to root PATH after a sudo -i
+    chmod u+w /etc/sudoers
+    sed -i 's/Defaults    secure_path = \/sbin:\/bin:\/usr\/sbin:\/usr\/bin/Defaults    secure_path = \/sbin:\/bin:\/usr\/sbin:\/usr\/bin:\/usr\/local\/bin/g' /etc/sudoers
+    chmod u-w /etc/sudoers
  
     # Firewalld
     yum -y install firewalld
