@@ -120,10 +120,7 @@ if [ "$(whoami)" = root ]; then
     # SublimeText 3 package: https://packagecontrol.io/packages/RemoteSubl
     wget -O /usr/local/bin/rmate https://raw.githubusercontent.com/aurora/rmate/master/rmate
     chmod a+x /usr/local/bin/rmate
-    # root doesn't have /usr/local in his path. And you'll often edit files
-    # as root, so :
-    ln -s /usr/local/bin/rmate /usr/bin
-
+    
     # -------------------------------------------------------------------------
     #                                  Docker
     # -------------------------------------------------------------------------
