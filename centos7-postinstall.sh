@@ -99,7 +99,8 @@ if [[ "$(whoami)" = root ]]; then
   # mlocate      : A locate/updatedb implementation. Keeps a database of all 
   #                files and allows you to lookup files by name.
   # zsh          : Resembles ksh but with many enhancements
-  yum -y install vim-enhanced tmux links mlocate zsh
+  # cryptsetup   : To encrypt partitions
+  yum -y install vim-enhanced tmux links mlocate zsh cryptsetup
 
   # Tmux doesn't work unless you're in tty group
   gpasswd -a "$USERNAME" tty
@@ -111,7 +112,8 @@ if [[ "$(whoami)" = root ]]; then
   # -------------------------------------------------------------------------
   # This app let you edit files on a remote computer. I use it with this
   # SublimeText 3 package: https://packagecontrol.io/packages/RemoteSubl
-  wget -O /usr/local/bin/rmate https://raw.githubusercontent.com/aurora/rmate/master/rmate
+  wget -O /usr/local/bin/rmate \
+  https://raw.githubusercontent.com/aurora/rmate/master/rmate
   chmod a+x /usr/local/bin/rmate
   
   # -------------------------------------------------------------------------
