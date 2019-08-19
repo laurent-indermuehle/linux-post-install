@@ -100,7 +100,7 @@ if [[ "$(whoami)" = root ]]; then
   #                files and allows you to lookup files by name.
   # zsh          : Resembles ksh but with many enhancements
   # cryptsetup   : To encrypt partitions
-  yum -y install vim-enhanced tmux links mlocate zsh cryptsetup
+  yum -y install vim-enhanced tmux links mlocate zsh cryptsetup ncdu
 
   # Tmux doesn't work unless you're in tty group
   gpasswd -a "$USERNAME" tty
