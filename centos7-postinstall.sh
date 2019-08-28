@@ -9,6 +9,11 @@ readonly HOSTNAMEFULL="$COMPUTERNAME"."$HOSTNAME"
 # http://unix.stackexchange.com/questions/70859/why-doesnt-sudo-su-in-a-shell-script-run-the-rest-of-the-script-as-root 
 if [[ "$(whoami)" = root ]]; then
 
+  # OVH RTM and metrics packages
+  cp -p ./ovh-rtm.repo /etc/yum.repos.d/
+  yum update -y
+  yum install -y ovh-rtm-metrics-toolkit
+
   mkdir -p /root/.ssh
   if [[ ! -e /root/.ssh/authorized_keys ]]; then
      echo "$AUTHORIZEDKEYS" > /root/.ssh/authorized_keys

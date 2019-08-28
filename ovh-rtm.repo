@@ -1,0 +1,13 @@
+[rtm]
+name=OVH RTM RHEL/ CentOS $releasever - $basearch
+baseurl=http://last.public.ovh.rtm.snap.mirrors.ovh.net/centos/$releasever/$basearch/Packages/
+enabled=1
+repo_gpgcheck=1
+gpgkey=http://last.public.ovh.rtm.snap.mirrors.ovh.net/ovh_rtm.pub
+
+[metrics]
+name=OVH METRICS RHEL/ CentOS $releasever - $basearch
+baseurl=http://last.public.ovh.metrics.snap.mirrors.ovh.net/centos/$releasever/$basearch/Packages/
+enabled=1
+repo_gpgcheck=1
+gpgkey=http://last.public.ovh.metrics.snap.mirrors.ovh.net/pub.key
