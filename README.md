@@ -26,7 +26,7 @@ systemctl start docker
 
 ## Prerequisites:
 
-1) Copy your ssh pubkey in /root.ssh/authorized_keys
+1) Copy your ssh pubkey in /root/.ssh/authorized_keys
 2) Configure contants bellow
 
 ## How to run this script
