@@ -12,7 +12,7 @@ if [[ "$(whoami)" = root ]]; then
   # OVH RTM and metrics packages
   cp -p ./ovh-rtm.repo /etc/yum.repos.d/
   yum update -y
-  yum install -y ovh-rtm-metrics-toolkit
+  yum install -y --nogpgcheck ovh-rtm-metrics-toolkit
 
   mkdir -p /root/.ssh
   if [[ ! -e /root/.ssh/authorized_keys ]]; then
