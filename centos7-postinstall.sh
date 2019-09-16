@@ -42,7 +42,14 @@ if [[ "$(whoami)" = root ]]; then
   # firewall-cmd --set-default-zone=drop
   # Allow OVH to monitor the server
   firewall-cmd --zone=public --permanent --add-interface=eth0  # this will activate zone public for main network link and thus allow ICMP (ping)
-  firewall-cmd --zone=public --permanent --add-port=6100-6200/udp
+  firewall-cmd --zone=public --permanent --add-port=6100-6200/udp  # OVH
+  # firewall-cmd --zone=public --permanent --add-port=19999/tcp  # Netdata, closed because I prefer to forward threw ssh
+  firewall-cmd --zone=public --permanent --add-port=8888/tcp  # Resilio
+  firewall-cmd --zone=public --permanent --add-port=55555/tcp  # Resilio
+  firewall-cmd --zone=public --permanent --add-port=8080/tcp  # Traefik
+  firewall-cmd --zone=public --permanent --add-service=ssh
+  firewall-cmd --zone=public --permanent --add-service=http
+  firewall-cmd --zone=public --permanent --add-service=https
   firewall-cmd --reload
 
   # Hostname
@@ -105,7 +112,12 @@ if [[ "$(whoami)" = root ]]; then
   #                files and allows you to lookup files by name.
   # zsh          : Resembles ksh but with many enhancements
   # cryptsetup   : To encrypt partitions
-  yum -y install vim-enhanced tmux links mlocate zsh cryptsetup ncdu
+  # ncdu         : Explore your folders sorted by size
+  # jq           : JSON print and query tool
+  # borgbackup   : A deduplicating backup program
+  # netdata      : Real-time performance monitoring
+  yum -y install vim-enhanced tmux links mlocate zsh cryptsetup ncdu jq \
+  borgbackup netdata
 
   # Tmux doesn't work unless you're in tty group
   gpasswd -a "$USERNAME" tty
