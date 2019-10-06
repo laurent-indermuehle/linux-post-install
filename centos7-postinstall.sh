@@ -12,7 +12,26 @@ if [[ "$(whoami)" = root ]]; then
   # OVH RTM and metrics packages
   cp -p ./ovh-rtm.repo /etc/yum.repos.d/
   yum update -y
+
+  # OVH hasn't sign his package
   yum install -y --nogpgcheck ovh-rtm-metrics-toolkit
+
+  # ---------------------------------------------------------------------------
+  #                            Install base packages
+  # ---------------------------------------------------------------------------
+  # firwalld     : Firwall
+  # yum-cron     : To receive email when updates are available
+  # sendmail     : To send email when cronjob finishs
+  # epel-release : Extra Packages for Enterprise Linux repository config.
+  # make         : A GNU tool for controlling the generation of executables.
+  # gcc          : Various compilers (C, C++, Objective-C, Java, ...).
+  # git          : A fast, scalable, distributed revision control system.
+  # git-daemon   : For supporting git:// access to git repositories.
+  # p7zip        : p7zip is a port of 7za.exe for Unix.
+  # wget         : The non-interactive network downloader.
+  yum -y install firewalld yum-cron sendmail epel-release make gcc git \
+  git-daemon p7zip wget
+  # nmap         : I don't remember why I installed this package -> OFF.
 
   mkdir -p /root/.ssh
   if [[ ! -e /root/.ssh/authorized_keys ]]; then
@@ -34,7 +53,6 @@ if [[ "$(whoami)" = root ]]; then
   chmod u-w /etc/sudoers
 
   # Firewalld
-  yum -y install firewalld
   systemctl enable firewalld
   systemctl start firewalld
   # 2018-09-29 Laurent Indermühle: Why do you want to add ssh to drop zone ? without source or interface, I don't see the point
@@ -60,7 +78,6 @@ if [[ "$(whoami)" = root ]]; then
   timedatectl set-timezone "$TIMEZONE"
 
   # Yum-cron
-  yum -y install yum-cron sendmail
   # https://askubuntu.com/questions/76808/how-do-i-use-variables-in-a-sed-command
   sed -i "s/system_name = None/system_name = $HOSTNAMEFULL/g" /etc/yum/yum-cron.conf
   sed -i 's/emit_via = stdio/emit_via = email/g' /etc/yum/yum-cron.conf
@@ -70,21 +87,10 @@ if [[ "$(whoami)" = root ]]; then
   # apply_updates = no it means you have to login an apply updates
   systemctl start yum-cron.service
   systemctl enable yum-cron.service
+
+  # Sendmail
   systemctl start sendmail.service
   systemctl enable sendmail.service
-
-  # -------------------------------------------------------------------------
-  #                           Install base packages
-  # -------------------------------------------------------------------------
-  # epel-release : Extra Packages for Enterprise Linux repository config.
-  # make         : A GNU tool for controlling the generation of executables.
-  # gcc          : Various compilers (C, C++, Objective-C, Java, ...).
-  # git          : A fast, scalable, distributed revision control system.
-  # git-daemon   : For supporting git:// access to git repositories.
-  # p7zip        : p7zip is a port of 7za.exe for Unix.
-  # wget         : The non-interactive network downloader.
-  yum -y install epel-release make gcc git git-daemon p7zip wget
-  # nmap         : I don't remember why I installed this package -> OFF.
 
   # -------------------------------------------------------------------------
   #                 Creating and configuring your admin user
