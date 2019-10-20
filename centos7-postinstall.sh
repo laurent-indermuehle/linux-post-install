@@ -122,8 +122,12 @@ if [[ "$(whoami)" = root ]]; then
   # jq           : JSON print and query tool
   # borgbackup   : A deduplicating backup program
   # netdata      : Real-time performance monitoring
+  # vnstat       : Network traffic monitor that keep a daily+monthly log
   yum -y install vim-enhanced tmux links mlocate zsh cryptsetup ncdu jq \
-  borgbackup netdata
+  borgbackup netdata vnstat
+
+  systemctl enable netdata
+  systemctl enable vnstat
 
   # Tmux doesn't work unless you're in tty group
   gpasswd -a "$USERNAME" tty
